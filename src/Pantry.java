@@ -117,6 +117,7 @@ public class Pantry {
         return x;
     }
 
+    //TODO 4: This function has some serious problems with variable names. Fix it up!
     /**
      * Removes a fruit or snack from the pantry
      * @param food the name of the food to be removed
@@ -125,27 +126,27 @@ public class Pantry {
      * @return
      */
     public int removeFood(String food, boolean isFruit, int quantity) {
-        List<String> foodToRemove = isFruit ? this.f : this.s;
-        List<Integer> quantityToRemove = isFruit ? this.theNumberOfFruitsInThePantry : this.theNumberOfSnacksInThePantry;
+        List<String> f = isFruit ? this.f : this.s;
+        List<Integer> q = isFruit ? this.theNumberOfFruitsInThePantry : this.theNumberOfSnacksInThePantry;
 
-        int currentNumFood = 0;
-        for (int i = 0; i < foodToRemove.size(); i++) {
-            if (foodToRemove.get(i).equals(food)) {
-                currentNumFood = quantityToRemove.get(i);
-                if (currentNumFood < quantity) {
-                    currentNumFood = 0;
+        int c = 0;
+        for (int i = 0; i < f.size(); i++) {
+            if (f.get(i).equals(food)) {
+                c = q.get(i);
+                if (c < quantity) {
+                    c = 0;
                 } else {
-                    currentNumFood -= quantity;
+                    c -= quantity;
                 }
-                quantityToRemove.set(i, currentNumFood);
+                q.set(i, c);
                 break;
             }
         }
-        return currentNumFood;
+        return c;
     }
 
-    // TODO 4: This function has a lot going on and should be broken down into separate smaller functions. Keep the flow of the code the same,
-    //  just split it up into different functions. Note: Make sure the original function accepts the same parameters and returns the correct value.
+    // TODO 5: This function has a lot going on and should be broken down into separate smaller functions. Keep the flow of the code the same,
+    //  just split it up into different functions. The variable names could also use some attention!
 
     /**
      * Takes in an array of food, an array of prices for each food, an array of the amount needed of each food, and an array indicating if each food is a fruit or not
@@ -155,73 +156,66 @@ public class Pantry {
      *
      * The function also updates the pantry with the new food items
      *
-     * @param food array of food
-     * @param amountNeeded array of the necessary amounts
-     * @param isFruit array of booleans indicating if this is a fruit or not
+     * @param f array of food
+     * @param amt array of the necessary amounts
+     * @param isF array of booleans indicating if this is a fruit or not
      * @param prices map which contains the price of each food
      * @return The total price of this shopping list
      */
-    public int goShopping(String[] food, int[] amountNeeded, boolean[] isFruit, Map<String, Integer> prices) {
+    public int goShopping(String[] f, int[] amt, boolean[] isF, Map<String, Integer> prices) {
         // Determine how many of each food we need
-        for (int i = 0; i < food.length; i++){
+        for (int i = 0; i < f.length; i++){
             // If it is a fruit, check how much of that fruit we have and subtract it from amountNeeded
-            if (isFruit[i]) {
+            if (isF[i]) {
                 // Once we find the fruit, we subtract. If we do not find it, we leave the amount needed as is
                 for (int j = 0; j < this.f.size(); j++) {
-                    if (this.f.get(j).equals(food[i])) {
-                        amountNeeded[i] -= this.theNumberOfFruitsInThePantry.get(j);
+                    if (this.f.get(j).equals(f[i])) {
+                        amt[i] -= this.theNumberOfFruitsInThePantry.get(j);
                     }
                 }
             } else {
                 // Do the same, but for the snacks
                 for (int j = 0; j < this.s.size(); j++) {
-                    if (this.s.get(j).equals(food[i])) {
-                        amountNeeded[i] -= this.theNumberOfSnacksInThePantry.get(j);
+                    if (this.s.get(j).equals(f[i])) {
+                        amt[i] -= this.theNumberOfSnacksInThePantry.get(j);
                     }
                 }
             }
             // We do not want to consider negative amounts
-            if (amountNeeded[i] < 0) {
-                amountNeeded[i] = 0;
+            if (amt[i] < 0) {
+                amt[i] = 0;
             }
         }
 
         int price = 0;
         // Calculate the total price of all the items we want
-        for (int i = 0; i < food.length; i++){
-            price += prices.get(food[i]) * amountNeeded[i];
+        for (int i = 0; i < f.length; i++){
+            price += prices.get(f[i]) * amt[i];
         }
 
         // Update our pantry with the new amounts
-        for (int i = 0; i < food.length; i++) {
+        for (int i = 0; i < f.length; i++) {
             // If it is a fruit, update the fruit entries, otherwise update the snacks
-            if (isFruit[i]) {
+            if (isF[i]) {
                 // If the fruit is already there, update it. Otherwise, add a new fruit
-                if (this.f.contains(food[i])) {
-                    int index = this.f.indexOf(food[i]);
-                    this.theNumberOfFruitsInThePantry.set(index, this.theNumberOfFruitsInThePantry.get(index) + amountNeeded[i]);
+                if (this.f.contains(f[i])) {
+                    int index = this.f.indexOf(f[i]);
+                    this.theNumberOfFruitsInThePantry.set(index, this.theNumberOfFruitsInThePantry.get(index) + amt[i]);
                 } else {
-                    this.f.add(food[i]);
-                    this.theNumberOfFruitsInThePantry.add(amountNeeded[i]);
+                    this.f.add(f[i]);
+                    this.theNumberOfFruitsInThePantry.add(amt[i]);
                 }
             } else {
                 // Same logic as with fruit, update if it exists otherwise add it
-                if (this.s.contains(food[i])) {
-                    int index = this.s.indexOf(food[i]);
-                    this.theNumberOfSnacksInThePantry.set(index, this.theNumberOfSnacksInThePantry.get(index) + amountNeeded[i]);
+                if (this.s.contains(f[i])) {
+                    int index = this.s.indexOf(f[i]);
+                    this.theNumberOfSnacksInThePantry.set(index, this.theNumberOfSnacksInThePantry.get(index) + amt[i]);
                 } else {
-                    this.s.add(food[i]);
-                    this.theNumberOfSnacksInThePantry.add(amountNeeded[i]);
+                    this.s.add(f[i]);
+                    this.theNumberOfSnacksInThePantry.add(amt[i]);
                 }
             }
         }
         return price;
     }
-
-
-
-
-
-
-
 }
